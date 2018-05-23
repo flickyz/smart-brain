@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'Play';
+    src: local('Play-Regular'), url('Play-Regular.ttf') format('truetype');
+}
+
+.App {
+  text-align: center;
+  font-family: 'Play';
+}
+
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.particles {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+}
