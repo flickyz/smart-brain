@@ -35,7 +35,26 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
+      box: {}
     }
+  }
+
+  calculateFaceLocation = (data) => {
+    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('inputimage');
+    const width = Number(image.width);
+    const height = Number(image.height);
+    return {
+      left: clarifaiFace.left_col * width,
+      top: clarifaiFace.top_row * height,
+      right: width - clarifaiFace.right_col * width,
+      bottom: height - clarifaiFace.bottom_row * height
+    }
+  }
+
+  displayFaceBox = (box) => {
+    this.setState({box: box});
+    console.log(box);
   }
 
   onInputChange = (event) => {
@@ -47,16 +66,12 @@ class App extends Component {
     app.models.predict(
       Clarifai.DEMOGRAPHICS_MODEL, 
       this.state.input)
-    .then(
-    function(response) {
+    .then(response =>{
       // do something with response
-      console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
-      console.log(response.outputs[0].data.regions[0].data.face);
-    },
-    function(err) {
-      // there was an error
-    }
-  );
+      //console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
+      console.log(response.outputs[0].data.regions[0].data.face.age_appearance);
+      this.displayFaceBox(this.calculateFaceLocation(response))
+    }).catch(err => console.log(err));
   }
 
 
@@ -69,8 +84,11 @@ class App extends Component {
             <Rank /> 
             <ImageLinkForm
               onInputChange = { this.onInputChange }
-              onButtonSubmit = { this.onButtonSubmit }/>
-            <Demographics imageUrl = { this.state.imageUrl }/>
+              onButtonSubmit = { this.onButtonSubmit }
+            />
+            <Demographics 
+            imageUrl = { this.state.imageUrl } 
+            box = { this.state.box }/>
       </div>
     );
   }
