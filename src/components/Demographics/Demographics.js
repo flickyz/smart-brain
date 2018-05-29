@@ -7,13 +7,11 @@ const Demographics = ({ imageUrl, box }) => {
 			<div className = 'relative mt2'>
 				<img 
 					id = 'inputimage' 
-					alt = '' 
+					alt = ''
 					src = {imageUrl} 
-					width = '700px' 
-					height = 'auto'
 				/>
 				<div
-					className = 'facebox ba bw1 blue' 
+					className = 'facebox' 
 					style = {{
 							left: box.left,
 						 	top: box.top,
@@ -21,7 +19,6 @@ const Demographics = ({ imageUrl, box }) => {
 						 	bottom: box.bottom
 					}}>
 				</div>
-				
 			</div>
 		</div>
 		);

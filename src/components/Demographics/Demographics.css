@@ -1,4 +1,14 @@
+img {
+	width: 700px; 
+	height: auto;
+}
+
+
 .facebox{
 	position: absolute;
 	display: flex;
+	box-shadow: 0 0 0 3px #149df2 inset;
+	flex-wrap: wrap;
+	justify-content: center;
+	cursor: pointer;
 }
