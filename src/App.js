@@ -6,16 +6,10 @@ import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
 
 
-// initialize with your api key. This will also work in your browser via http://browserify.org/
-
-const app = new Clarifai.App({
- apiKey: 'a157a8e4e6f045c9ab84e5e00c6b906a'
-});
 
 
 const particlesOptions = {
@@ -30,24 +24,25 @@ const particlesOptions = {
   }
 }
 
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
 
 class App extends Component {
   constructor(){
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: {},
-      route: 'signin',
-      isSignIn: false,
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: ''
-      }
-    }
+    this.state = initialState;
   }
   loadUser = (data) => {
     this.setState({user: {
@@ -74,7 +69,6 @@ class App extends Component {
 
   displayFaceBox = (box) => {
     this.setState({box: box});
-    console.log(box);
   }
 
   onInputChange = (event) => {
@@ -83,13 +77,16 @@ class App extends Component {
 
   onPictureSubmit = () => {
     this.setState({imageUrl: this.state.input});
-    app.models.predict(
-      Clarifai.DEMOGRAPHICS_MODEL, 
-      this.state.input)
-    .then(response =>{
+    fetch('http://localhost:3000/imageurl', {
+          method: 'post',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            input: this.state.input,
+          })
+    })
+    .then(response => response.json())
+    .then(response => {
       // do something with response
-      //console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
-      console.log(response.outputs[0].data.regions[0].data.face.age_appearance);
       if(response) {
         fetch('http://localhost:3000/image', {
           method: 'put',
@@ -102,6 +99,7 @@ class App extends Component {
         .then(count => {
           this.setState(Object.assign(this.state.user, {entries: count}))
         })
+        .catch(err => console.log)
       }
       this.displayFaceBox(this.calculateFaceLocation(response))
     })
@@ -111,8 +109,8 @@ class App extends Component {
   onRouteChange = (route) => {
     if (route === 'home') {
       this.setState({ isSignIn: true });
-    } else if (route === 'home'){
-      this.setState({ isSignIn: false });
+    } else if (route === 'signout'){
+      this.setState(initialState);
     }
     this.setState({ route: route });
   }
